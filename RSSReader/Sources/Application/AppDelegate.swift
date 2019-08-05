@@ -16,6 +16,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        let presenter = FeedPresenter()
+        let viewController = FeedViewController(presenter: presenter)
+        let navigationVC = UINavigationController(rootViewController: viewController)
+        navigationVC.navigationBar.prefersLargeTitles = true
+        navigationVC.navigationBar.isTranslucent = false
+        navigationVC.title = "test"
+        self.window = window
+        window.rootViewController = navigationVC
+        window.makeKeyAndVisible()
+        window.backgroundColor = .white
         return true
     }
 
