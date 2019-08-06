@@ -11,21 +11,26 @@
 import Foundation
 
 // MARK: View -
-protocol ArticlesViewProtocol: class {
-
+protocol ArticlesViewProtocol: AnyObject {
+    func setupInitialState(with article: Article)
 }
 
 // MARK: Presenter -
-protocol ArticlesPresenterProtocol: class {
+protocol ArticlesPresenterProtocol: AnyObject {
 	var view: ArticlesViewProtocol? { get set }
     func viewDidLoad()
 }
 
-class ArticlesPresenter: ArticlesPresenterProtocol {
+final class ArticlesPresenter: ArticlesPresenterProtocol {
 
     weak var view: ArticlesViewProtocol?
+    private let article: Article
+    
+    init(article: Article) {
+        self.article = article
+    }
 
     func viewDidLoad() {
-
+        view?.setupInitialState(with: article)
     }
 }

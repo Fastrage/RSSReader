@@ -10,26 +10,20 @@ import UIKit
 
 class FeedCell: UITableViewCell {
     
-    
-    
     private let titleLabel = UILabel()
     private let shortDescriptionLabel = UILabel()
     private let cellImageView = UIImageView()
     private let imageDownloader = ImageDownloader()
     
-    
-    
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("unsupported")
     }
     
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.addSubview(self.cellImageView)
-        self.addSubview(self.titleLabel)
-        self.addSubview(self.shortDescriptionLabel)
+        self.contentView.addSubview(self.cellImageView)
+        self.contentView.addSubview(self.titleLabel)
+        self.contentView.addSubview(self.shortDescriptionLabel)
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         
@@ -37,10 +31,10 @@ class FeedCell: UITableViewCell {
         self.shortDescriptionLabel.numberOfLines = 2
         
         self.titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        self.titleLabel.textColor = .black
+        self.titleLabel.textColor = .white
         
         self.shortDescriptionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-        self.shortDescriptionLabel.textColor = .black
+        self.shortDescriptionLabel.textColor = .white
         
         self.cellImageView.contentMode = .scaleAspectFill
     }
@@ -66,7 +60,7 @@ class FeedCell: UITableViewCell {
         self.titleLabel.frame.origin = titleLabelOrigin
         self.titleLabel.frame.size = titleLabelSize
         
-        self.cellImageView.frame = self.frame
+        self.cellImageView.frame = self.contentView.frame
     }
     
     func update(with viewModel: Article) {
@@ -76,7 +70,6 @@ class FeedCell: UITableViewCell {
             DispatchQueue.main.async {
                 self.cellImageView.image = image
             }
-            
         })
         self.setNeedsLayout()
     }

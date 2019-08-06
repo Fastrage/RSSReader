@@ -10,24 +10,115 @@
 
 import UIKit
 
-class ArticlesViewController: UIViewController, ArticlesViewProtocol {
-
-	var presenter: ArticlesPresenterProtocol
-
-	init(presenter: ArticlesPresenterProtocol) {
+final class ArticlesViewController: UIViewController {
+    
+    var presenter: ArticlesPresenterProtocol
+    private let scrollView = UIScrollView()
+    private let titleLabel = UILabel()
+    private let shortDescriptionLabel = UILabel()
+    private let cellImageView = UIImageView()
+    private let imageDownloader : iImageDownloader
+    
+    init(presenter: ArticlesPresenterProtocol) {
         self.presenter = presenter
-        super.init(nibName: "ArticlesViewController", bundle: nil)
+        self.imageDownloader = ImageDownloader()
+        super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-	override func viewDidLoad() {
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupView()
         presenter.view = self
         presenter.viewDidLoad()
     }
-
 }
+
+extension ArticlesViewController: ArticlesViewProtocol {
+    func setupInitialState(with article: Article) {
+        
+        self.navigationItem.title = article.title
+        self.navigationItem.largeTitleDisplayMode = .never
+        
+        titleLabel.text = article.title
+        titleLabel.sizeToFit()
+        let shortDescriptionOrigin = CGPoint(x: Constants.margin,
+                                             y:  self.titleLabel.frame.maxY + Constants.margin)
+        
+        self.shortDescriptionLabel.frame.origin = shortDescriptionOrigin
+        shortDescriptionLabel.text = article.content
+        shortDescriptionLabel.sizeToFit()
+        
+        imageDownloader.getPhoto(url: article.imageURL, completion: { (image, error) in
+            DispatchQueue.main.async {
+                self.cellImageView.image = image
+            }
+        })
+        var scrollViewSize = CGRect.zero
+        for view in scrollView.subviews {
+            scrollViewSize = scrollViewSize.union(view.frame)
+        }
+        
+        scrollView.contentSize = scrollViewSize.size
+
+    }
+}
+
+private extension ArticlesViewController {
+    func setupView() {
+        self.view.backgroundColor = .white
+        self.view.addSubview(scrollView)
+        self.scrollView.frame = self.view.frame
+        self.scrollView.contentInsetAdjustmentBehavior = .never
+        
+        self.scrollView.addSubview(titleLabel)
+        self.scrollView.addSubview(shortDescriptionLabel)
+        self.scrollView.addSubview(cellImageView)
+        
+        self.scrollView.layer.cornerRadius = 10
+        self.scrollView.layer.masksToBounds = true
+        
+        self.titleLabel.numberOfLines = 3
+        self.shortDescriptionLabel.numberOfLines = 0
+        
+        self.titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        self.titleLabel.textColor = .black
+        
+        self.shortDescriptionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        self.shortDescriptionLabel.textColor = .black
+        
+        self.cellImageView.contentMode = .scaleAspectFill
+        
+        self.scrollView.frame.origin = CGPoint(x: 0, y: 0)
+        let maxImageWidth = self.scrollView.frame.width
+        let maxImageHeight = maxImageWidth * 0.7
+        let imageOrigin = CGPoint(x: 0, y: 0)
+        
+        self.cellImageView.frame.origin = imageOrigin
+        self.cellImageView.frame.size = CGSize(width: maxImageWidth, height: maxImageHeight)
+        
+        let maxLabelWidth = self.scrollView.frame.width - Constants.margin * 2
+        let maxLabelSize = CGSize(width: maxLabelWidth, height: 10)
+        
+        self.titleLabel.frame.origin = CGPoint(x: Constants.margin, y: self.cellImageView.frame.maxY + Constants.margin)
+        self.titleLabel.frame.size = maxLabelSize
+        
+        let shortDescriptionSize = CGSize(width: maxLabelWidth, height: 10)
+        let shortDescriptionOrigin = CGPoint(x: Constants.margin,
+                                             y:  self.titleLabel.frame.maxY + Constants.margin)
+        
+        self.shortDescriptionLabel.frame.origin = shortDescriptionOrigin
+        self.shortDescriptionLabel.frame.size = shortDescriptionSize
+        
+    }
+}
+
+private struct Constants {
+    static let margin: CGFloat = 24
+    static let titleMarginBottom: CGFloat = 8
+}
+

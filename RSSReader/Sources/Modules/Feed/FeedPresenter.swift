@@ -12,29 +12,31 @@ import Foundation
 
 // MARK: View -
 protocol FeedViewProtocol: AnyObject {
-func setupInitialState()
+    func setupInitialState()
+    func showDetailView(with article: Article)
 }
 
 // MARK: Presenter -
 protocol FeedPresenterProtocol: AnyObject {
 	var view: FeedViewProtocol? { get set }
+    //var router: FeedRouterProtocol { get }
     func viewDidLoad()
     func numberOfRowsInSection() -> Int
     func itemForRow(at indexPath: IndexPath) -> Article
+    func didSelectRowAt(at indexPath: IndexPath)
 }
 
-class FeedPresenter: FeedPresenterProtocol {
-    
-    
-    
-    
-    
+final class FeedPresenter: FeedPresenterProtocol {
+
     weak var view: FeedViewProtocol?
     private let feedService: iFeedService
     private var articles: [Article] = []
+    //var router: FeedRouterProtocol
     
     init() {
         feedService = FeedService()
+//        router = FeedRouter(feedViewController: self.view as! FeedViewController)
+        
     }
    
     func numberOfRowsInSection() -> Int {
@@ -46,6 +48,12 @@ class FeedPresenter: FeedPresenterProtocol {
     func sendArticles() -> [Article] {
         
         return self.articles
+    }
+    
+    func didSelectRowAt(at indexPath: IndexPath) {
+        let article = self.articles[indexPath.row]
+        view?.showDetailView(with: article)
+        
     }
     
     func viewDidLoad() {

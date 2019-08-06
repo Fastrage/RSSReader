@@ -10,12 +10,12 @@
 
 import UIKit
 
-protocol iFeedView {
-    
-}
+//protocol iFeedView {
+//    
+//}
 
 
-class FeedViewController: UIViewController {
+final class FeedViewController: UIViewController {
     private let tableView: UITableView = UITableView(frame: .zero)
 	private let presenter: FeedPresenterProtocol
     //private var articles: [Article]
@@ -31,14 +31,14 @@ class FeedViewController: UIViewController {
 
 	override func viewDidLoad() {
         super.viewDidLoad()
-        let view = UIView()
+//        let view = UIView()
         view.addSubview(self.tableView)
         self.title = "News"
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.register(FeedCell.self, forCellReuseIdentifier: "FeedCell")
-        self.tableView.frame = self.view.bounds
-        self.view = view
+        self.tableView.frame = self.view.frame
+    //    self.view = view
         presenter.view = self
         presenter.viewDidLoad()
     }
@@ -51,6 +51,10 @@ extension FeedViewController: UITableViewDelegate {
         let width = tableView.frame.width - tableView.contentInset.left - tableView.contentInset.right
         let height = width * ratio
         return height
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        presenter.didSelectRowAt(at: indexPath)
     }
 }
 
@@ -69,4 +73,10 @@ extension FeedViewController: UITableViewDataSource {
 extension FeedViewController: FeedViewProtocol {
     func setupInitialState() {
     }
+    func showDetailView(with article: Article) {
+        let presenter = ArticlesPresenter(article: article)
+        let viewController = ArticlesViewController(presenter: presenter)
+        self.navigationController?.show(viewController, sender: Any?.self)
+    }
+    
 }

@@ -15,9 +15,7 @@ class DataParser: iDataParser {
     func parseDataFromFile() -> [Article] {
         let url = Bundle.main.url(forResource: "CachedArticles", withExtension: nil)!
         let data = try! Data(contentsOf: url)
-        let JSON = try! JSONDecoder().decode([Article].self, from: data)
-        print(JSON)
-        
+        let JSON = try! JSONDecoder().decode([Article].self, from: data)        
         return JSON
     }
 }
